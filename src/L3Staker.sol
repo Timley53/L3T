@@ -8,6 +8,9 @@ contract L3Staker is Ownable {
 
     // reward = (stakedAmount * elapsedTime * interestRate) / (secondsInYear * 100)
 
+    error L3S_ACTIVE_STAKE_ONGOING();
+    error L3S_STAKING_FAILED();
+
     uint256 public constant INTERREST_RATE = 10;
     uint256 public constant secondsInYear = 365 days;
 
@@ -24,24 +27,35 @@ contract L3Staker is Ownable {
         L3TokenAddress = L3Token(tokenContractAddress);
     }
 
-    function stake(uint256 amount) public {
+    /**
+     * 
+     * @dev  first e typecast the token contract using its address
+     * then we check if the user that intends to stake has anybalance
+     * 
+     */
+
+
+    function stake() public {
     // first check if user posses any token balance
-       L3Token l3token = L3Token(L3TokenAddress);
+       L3Token l3token = L3Token(L3TokenAddress); 
        uint256 userBalance = l3token.balanceOf(msg.sender);
        require(userBalance > 0, "You have no token to stake, what you tryna pull here lassie?");
 
-    // staking contract calls Token contract, and removes from allowance
-
-    l3token.stakerSpendsAllowance(msg.sender, amount);
-
         if(getStakeInfo(msg.sender).stakeValue > 0){
-            revert("active stake on going");
+            revert L3S_ACTIVE_STAKE_ONGOING();
         }
-    //   staking record created
+
+         //   staking record created
         stakes[msg.sender] = stakeStruct({
-            stakeValue: amount,
+            stakeValue: l3token.allowance(msg.sender, address(this)),
             stakeTimeStart: block.timestamp
         });
+    // staking contract calls Token contract, and removes from allowance
+   bool success = l3token.stakerSpendsAllowance(msg.sender);
+
+        if(!success){
+            revert L3S_STAKING_FAILED();
+        }
     }
 
     function getStakeInfo(address user) public view returns(stakeStruct memory stakeInfo){
@@ -68,9 +82,11 @@ contract L3Staker is Ownable {
         require(stakes[msg.sender].stakeValue > 0, "nothing to unstake boi");
 
         stakeStruct memory userInfo = getStakeInfo(msg.sender);
-        token.transfer(msg.sender, userInfo.stakeValue);
+        token.transfer(msg.sender, userInfo.stakeValue); // this msg.sender of this transfer function on the token contract is the staking contract
+
         (uint256 reward,) = getUserPendingReward(msg.sender);
         token.mintReward(msg.sender, reward);
+
         // set userStake Data to zero
         delete stakes[msg.sender];
     }

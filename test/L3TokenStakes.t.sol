@@ -16,16 +16,18 @@ contract L3TokenTest is Test {
         vm.startBroadcast(deployer);
         l3Token = new L3Token();
         l3Staker = new L3Staker(address(l3Token));
+        l3Token.pauseContract();
         l3Token.setStakerRole(address(l3Staker));
-        // console.log("token address:" , address(l3Token));
-        // console.log("staker address:",  address(l3Staker));
-        // console.log("deployer:" , deployer);
-        // console.log("msg.sender:" , msg.sender);
+        l3Token.unPauseContract();
         vm.stopBroadcast();
     }
       
    function testUserUnstakes() public {
-        
+        vm.startPrank(deployer);
+        l3Token.pauseContract();
+        l3Token.grantMinterRole(address(l3Staker));
+        l3Token.unPauseContract();
+        vm.stopPrank();
         // user joins and mints
         vm.startPrank(user1);
         l3Token.userMint(user1);
@@ -33,7 +35,7 @@ contract L3TokenTest is Test {
         // user approves staker to spend
         l3Token.userApproveStaker(120);
         // user call stake
-        l3Staker.stake(120);
+        l3Staker.stake();
         // user unstakes
         vm.warp(block.timestamp + 300 days); // time manipulation before unstake to increase yeild
         l3Staker.unStake();

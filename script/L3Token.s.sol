@@ -12,7 +12,7 @@ contract L3TokenScript is Script {
     function run() public {
         vm.startBroadcast();
         l3Token = new L3Token();
-        l3Staker = new L3Staker(address(l3Token));
+        l3Staker = new L3Staker(address(l3Token)); // staker requires token addresss
         vm.stopBroadcast();
     }
 }

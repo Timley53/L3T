@@ -15,8 +15,11 @@ contract SetStakerRole is Script {
 
     function FxnTester(address deployedContract, address deployedStaker) public {
         // deployer sets the staker address and its role
-        // vm.prank(deployer);
+        vm.startPrank(deployer);
+        L3Token(deployedContract).pauseContract();
         L3Token(deployedContract).setStakerRole(deployedStaker);
+        L3Token(deployedContract).unPauseContract();
+        vm.stopPrank();
         }
 
    

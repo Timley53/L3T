@@ -16,7 +16,9 @@ contract L3TokenTest is Test {
         vm.startBroadcast(deployer);
         l3Token = new L3Token();
         l3Staker = new L3Staker(address(l3Token));
+        l3Token.pauseContract();
         l3Token.setStakerRole(address(l3Staker));
+        l3Token.unPauseContract();      
         vm.stopBroadcast();
     }
 
@@ -30,7 +32,7 @@ contract L3TokenTest is Test {
         // user approves staker to spend
         l3Token.userApproveStaker(120);
         // user call stake
-        l3Staker.stake(120);       
+        l3Staker.stake();       
         assert(l3Staker.getStakeInfo(user1).stakeValue == 120);
         vm.stopPrank();
     }
@@ -41,7 +43,7 @@ contract L3TokenTest is Test {
         // user approves staker to spend
         l3Token.userApproveStaker(120);
         // user call stake
-        l3Staker.stake(120);  
+        l3Staker.stake();  
         vm.warp(block.timestamp + 250 days); 
         (uint256 reward ,) = l3Staker.getUserPendingReward(user1);
         assert(reward > 0);   
@@ -56,9 +58,9 @@ contract L3TokenTest is Test {
         // user approves staker to spend
         l3Token.userApproveStaker(120);
         // user call stake
-        l3Staker.stake(120);       
+        l3Staker.stake();       
         vm.expectRevert();
-        l3Staker.stake(120); 
+        l3Staker.stake(); 
         vm.stopPrank();      
 
     }
