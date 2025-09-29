@@ -35,11 +35,8 @@ It serves as a lightweight but extendable foundation for experimenting with ERC2
 
 ### 🚀 New in Latest Commit
 
-- Added **`MINTER_ROLE`** for controlled token minting.
-- Added **`PAUSABLE_ROLE`** for emergency stops.
-- Integrated **`Pausable`** module with `pause` and `unpause` functionality.
-- Restricted pausing/unpausing to **only the contract owner**.
-- Added **unit tests** for minting roles and pause/unpause functionality — all tests passed.
+- Adjustable Interest rates
+- New Feature allows admin to set a newly proposed and accepted interest rate which often has a schedule date of 2days after approved proposal, with a grace period of 14 days for effect.
 
 ---
 
