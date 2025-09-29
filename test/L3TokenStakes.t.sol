@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-   pragma solidity ^0.8.13;
+pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
 import {L3Token} from "../src/L3Token.sol";
@@ -21,26 +21,42 @@ contract L3TokenTest is Test {
         l3Token.unPauseContract();
         vm.stopBroadcast();
     }
-      
-   function testUserUnstakes() public {
+
+    function testUserUnstakes() public {
         vm.startPrank(deployer);
-        l3Token.pauseContract();
         l3Token.grantMinterRole(address(l3Staker));
-        l3Token.unPauseContract();
         vm.stopPrank();
         // user joins and mints
         vm.startPrank(user1);
         l3Token.userMint(user1);
-        uint256 userInitialBalance = l3Token.balanceOf(user1); //getting user initial balance
+        //getting user initial balance
+        uint256 userInitialBalance = l3Token.balanceOf(user1); 
         // user approves staker to spend
-        l3Token.userApproveStaker(120);
+        l3Token.userApproveStaker();
         // user call stake
-        l3Staker.stake();
+        l3Staker.stake(100);
         // user unstakes
         vm.warp(block.timestamp + 300 days); // time manipulation before unstake to increase yeild
         l3Staker.unStake();
         assert(l3Token.balanceOf(user1) > userInitialBalance); // new balance should be higher than initial balance
-        vm.stopPrank(); 
+        vm.stopPrank();
     }
 
+    function testSetStakerRoleRevertsIfAddressZero() public {
+        vm.prank(deployer);
+        vm.expectRevert();
+        l3Token.setStakerRole(address(0));
+    }
+
+    function testOnlyOwnerCanSetStakerRole() public {
+        vm.prank(user1);
+        vm.expectRevert();
+        l3Token.setStakerRole(dummyStakerAddress);
+    }
+
+    function testOnlyStakerCanMintReward() public {
+        vm.prank(user1);
+        vm.expectRevert();
+        l3Token.mintReward(user1, 20);
+    }
 }

@@ -3,7 +3,7 @@ src = "src"
 out = "out"
 libs = ["lib"]
 remapping=[
-    "@openzeppelin/=lib/openzeppelin-contracts/"
+    "@openzeppelin-contracts/=lib/openzeppelin-contracts/"
 ]
 
 [etherscan]

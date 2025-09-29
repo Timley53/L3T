@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-   pragma solidity ^0.8.13;
+pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
 import {L3Token} from "../../src/L3Token.sol";
@@ -21,12 +21,11 @@ contract InteractionTest is Test {
         vm.stopBroadcast();
     }
 
-
     function testSetStakerRole() public {
         SetStakerRole sSR = new SetStakerRole();
         sSR.FxnTester(address(l3Token), address(l3Staker));
         vm.startPrank(deployer);
-        assertEq(l3Token.getStaker(),address(l3Staker) );
+        assertEq(l3Token.getStaker(), address(l3Staker));
         vm.stopPrank();
     }
 }

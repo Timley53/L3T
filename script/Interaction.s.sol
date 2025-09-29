@@ -5,13 +5,10 @@ import {Script, console} from "forge-std/Script.sol";
 import {L3Token} from "../src/L3Token.sol";
 import {L3Staker} from "../src/L3Staker.sol";
 
-
 contract SetStakerRole is Script {
-
-        address public l3Token;
-        address public staker;
-        address deployer = makeAddr("kkk");
-
+    address public l3Token;
+    address public staker;
+    address deployer = makeAddr("kkk");
 
     function FxnTester(address deployedContract, address deployedStaker) public {
         // deployer sets the staker address and its role
@@ -20,9 +17,8 @@ contract SetStakerRole is Script {
         L3Token(deployedContract).setStakerRole(deployedStaker);
         L3Token(deployedContract).unPauseContract();
         vm.stopPrank();
-        }
+    }
 
-   
     // 1. setUp: prepare addresses, load contract
     function setUp() public {
         l3Token = vm.envAddress("Token_address");
@@ -32,17 +28,17 @@ contract SetStakerRole is Script {
     // 2. run: actually interact
     function run() public {
         vm.startBroadcast(vm.envUint("APK"));
-    
+
         FxnTester(l3Token, staker);
 
         vm.stopBroadcast();
     }
 }
 
-
-contract OwnerMint is Script{
+contract OwnerMint is Script {
     address l3Token;
-    function setUp() public{
+
+    function setUp() public {
         l3Token = vm.envAddress("Token_address");
     }
 
